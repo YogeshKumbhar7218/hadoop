@@ -1,0 +1,134 @@
+****************JAVA MAPREDUCE (WORDCOUNT PROGRAME)*********************
+
+
+
+
+nano WordCount.java
+===========paste the program====
+
+//package org.myorg;
+import java.io.IOException;
+import java.util.*;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.util.*;
+public class WordCount {
+public static class Map extends MapReduceBase implements
+Mapper<LongWritable, Text, Text, IntWritable> {
+private final static IntWritable one = new IntWritable(1);
+private Text word = new Text();public void map(LongWritable key, Text value,
+OutputCollector<Text,
+IntWritable> output, Reporter reporter) throws IOException {
+String line = value.toString();
+StringTokenizer tokenizer = new StringTokenizer(line);
+while (tokenizer.hasMoreTokens()) {
+word.set(tokenizer.nextToken());
+output.collect(word, one);
+}
+}
+}
+public static class Reduce extends MapReduceBase implements
+Reducer<Text, IntWritable, Text, IntWritable> {
+public void reduce(Text key, Iterator<IntWritable> values,
+OutputCollector<Text, IntWritable> output, Reporter reporter) throws IOException
+{
+int sum = 0;
+while (values.hasNext()) {
+sum += values.next().get();
+}
+output.collect(key, new IntWritable(sum));
+}
+}
+public static void main(String[] args) throws Exception {
+JobConf conf = new JobConf(WordCount.class);
+conf.setJobName("wordcount");
+conf.setOutputKeyClass(Text.class);
+conf.setOutputValueClass(IntWritable.class);conf.setMapperClass(Map.class);
+//conf.setCombinerClass(Reduce.class);
+conf.setReducerClass(Reduce.class);conf.setInputFormat(TextInputFormat.class);
+conf.setOutputFormat(TextOutputFormat.class);
+FileInputFormat.setInputPaths(conf, new Path(args[0]));
+FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+JobClient.runJob(conf);
+}
+}
+
+
+
+
+
+//#press Enter
+//ctrl C
+//or ctrl 0 enter ctrlx
+
+
+
+
+
+
+export CLASSPATH=/usr/local/hadoop/hadoop-core-1.2.1.jar
+
+mkdir wordcount_classes
+
+javac -d wordcount_classes/ WordCount.java
+
+cd wordcount_classes
+
+ls
+
+cd
+
+jar -cvf wordcount.jar -C wordcount_classes/ .
+
+
+
+
+
+
+
+
+===========//get data file from nano paste command========
+
+nano filename.extension                      //data.txt
+
+
+
+
+
+
+====put data of your choice and then save and come out to terminal
+
+hadoop fs -put filename.extension .                          //IMP:Put that file on HDFS with approprite name and extension
+
+
+
+hadoop fs -du filename.extension                 
+
+
+
+hadoop jar wordcount.jar WordCount filename.extension result               //IMP step...Wordcount pgm applied to given input file        //data.txtfile and output file result get stored
+
+
+
+hadoop fs -lsr /user/ubuntu/result                                       //checking data on backend Linux Terminal
+
+
+
+//DOwnload INput File and output file result at part_00000
+
+
+
+
+///Else check on front end Gui Web browser
+
+
+public IP of machine(Localhost):50070     //NN port no.
+public IP of machine(Localhost):50075     //Dn port No.
+
+//check SG...ALL traffic anywhere ipv4
+             ALL TCP Anywhere ipv4
+             ssh MY ip
+             HTTP MyIpv4      save it
+

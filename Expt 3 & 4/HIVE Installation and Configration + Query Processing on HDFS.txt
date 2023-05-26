@@ -1,0 +1,76 @@
+**********************HIVE Installation(Data Query)************************
+
+sudo apt-get update && sudo apt-get upgrade -y
+
+wget https://dlcdn.apache.org/hive/hive-1.2.2/apache-hive-1.2.2-bin.tar.gz
+
+tar -xzvf apache-hive-1.2.2-bin.tar.gz
+
+sudo mv apache-hive-1.2.2-bin /usr/local/hive
+
+cat>>.bashrc<<EOL
+export HIVE_HOME=/usr/local/hive
+export PATH=$PATH:/usr/local/hive/bin
+EOL
+
+bash
+
+cp $HIVE_HOME/conf/hive-env.sh.template $HIVE_HOME/conf/hive-env.sh
+cat>>$HIVE_HOME/conf/hive-env.sh<<EOL
+export HADOOP_HOME=/usr/local/hadoop
+EOL
+
+hadoop fs -mkdir /user/ubuntu/
+
+hive 
+(it will error, we do this just so that tmp directory gets created for further processes of hive)
+
+hadoop fs -chmod -R 777 /tmp
+
+cd
+
+hive
+exit;
+
+
+
+
+
+
+
+=============Loading Server Log Data in hive===============
+
+
+nano serverlog.log    //copypaste the data from serverlog.log data file
+
+   //step 1= put serverlog.log data file into HDFS by following command
+  
+hadoop fs -put serverlog.log /user/ubuntu/
+
+
+hive
+
+Create database server;
+
+Show databases;
+
+Use server;
+
+show tables;
+
+create table serverdata (time STRING, ip STRING, country STRING, status STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+select * from serverdata;
+
+load data inpath '/user/ubuntu/serverlog.log' into table serverdata;
+
+select * from serverdata;
+
+SELECT DISTINCT ip, time from serverdata;            #Mapreduce Job will execute & it will show results on CLI only
+
+
+exit;   
+
+
+
+
