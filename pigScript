@@ -1,0 +1,7 @@
+employee = LOAD '/pigInput' using PigStorage(',') AS ( ssn:chararray,name:chararray, department:chararray, city:chararray);
+emp_foreach = foreach employee generate name,department;
+emp_filter = filter employee by city == 'Austin';
+STORE emp_filter into '/pigresult';
+emp_order = order employee by ssn desc;
+
+
